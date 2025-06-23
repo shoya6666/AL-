@@ -16,8 +16,9 @@ void GameScene::Initialize() {
 	player_ = new Player();
 	// 3Dモデルデータの生成
 	modelBlock_ = Model::CreateFromOBJ("block");
+	KamataEngine::Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
 	// 自キャラの初期化
-	player_->Initialize(model_, textureHandle_, &camera_);
+	player_->Initialize(model_, &camera_, playerPosition);
 	// サウンドデータハンドル
 	//soundDataHandle_ = Audio::GetInstance()->LoadWave("fanfare.wav");
 	// 音声再生
@@ -45,6 +46,8 @@ void GameScene::Initialize() {
 
 	GenerateBlocks();
 
+	KamataEngine::Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1,18);
+	player_->Initialize(model_, &camera_, playerPosition);
 
 }
 
