@@ -24,6 +24,9 @@ void MapChipField::ResetMapChipData() {
 
 void MapChipField::LoadMapChipCsv(const std::string& filePath) {
 
+	// マップチップデータをリセット
+	ResetMapChipData();
+
 	std::ifstream file;
 	file.open(filePath);
 	assert(file.is_open());
@@ -38,6 +41,8 @@ void MapChipField::LoadMapChipCsv(const std::string& filePath) {
 	//
 	for (uint32_t i = 0; i < kNumBlockVirtical; ++i) {
 	
+
+
 		std::string line;
 		getline(mapChipCsv, line);
 

@@ -19,10 +19,10 @@ void GameScene::Initialize() {
 	// 自キャラの初期化
 	player_->Initialize(model_, textureHandle_, &camera_);
 	// サウンドデータハンドル
-	soundDataHandle_ = Audio::GetInstance()->LoadWave("fanfare.wav");
+	//soundDataHandle_ = Audio::GetInstance()->LoadWave("fanfare.wav");
 	// 音声再生
 	// Audio::GetInstance()->PlayWave(soundDataHandle_);
-	voiceHandle_ = Audio::GetInstance()->PlayWave(soundDataHandle_, true);
+	//voiceHandle_ = Audio::GetInstance()->PlayWave(soundDataHandle_, true);
 	// ライン描画が参照するかめらを指定する
 	PrimitiveDrawer::GetInstance()->SetCamera(&camera_);
 	// デバッグカメラ生成
