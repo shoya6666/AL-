@@ -125,9 +125,7 @@ void GameScene::Draw() {
 	Model::PreDraw();
 
 	// 3Dモデル描画
-	model_->Draw(worldTransform_, camera_, textureHandle_);
 	player_->Draw();
-	model_->Draw(worldTransform_, debugCamera_->GetCamera(), textureHandle_);
 	for (std::vector<WorldTransform*>& worldTransformBlockkLine : worldTransformBlocks_) {
 		for (WorldTransform* worldTransformBlock : worldTransformBlockkLine) {
 			if (!worldTransformBlock) {
