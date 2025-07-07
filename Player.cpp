@@ -1,6 +1,7 @@
 #include "Player.h"
 #include "cassert"
 #include<numbers>
+#include "MyMath.h"
 
 using namespace KamataEngine;
 using namespace MathUtility;
@@ -35,7 +36,7 @@ void Player::Update() {
 	//移動
 	worldTransform_.translation_ += velocity_;
 
-	
+	worldTransform_.matWorld_ = MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
 
 }
 
