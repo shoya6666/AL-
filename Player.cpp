@@ -1,13 +1,12 @@
 #define NOMINMAX
 #include "Player.h"
-#include "cassert"
-#include<numbers>
 #include "MyMath.h"
-#include<algorithm>
+#include "cassert"
+#include <algorithm>
+#include <numbers>
 
 using namespace KamataEngine;
 using namespace MathUtility;
-
 
 void Player::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera, const Vector3& position) {
 
@@ -22,9 +21,9 @@ void Player::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera
 void Player::Update() {
 
 	if (onGround_) {
-		//ジャンプ開始
+		// ジャンプ開始
 		if (velocity_.y > 0.0f) {
-			//空中状態に移動
+			// 空中状態に移動
 			onGround_ = false;
 		}
 
@@ -60,6 +59,7 @@ void Player::Update() {
 					turnTimer_ = kTimeTern;
 				}
 			}
+
 			// 加速/減速
 			velocity_ += acceleration;
 			// 最大速度制限
@@ -67,10 +67,14 @@ void Player::Update() {
 		} else {
 			velocity_.x *= (1.0f - kAttenuation);
 		}
+
+		if (Input::GetInstance()->PushKey(DIK_UP)) {
+			velocity_ += Vector3(0, kJumpAcceleration, 0);
+		}
 	} else {
-		//落下速度
+		// 落下速度
 		velocity_ += Vector3(0, -kGravityAcceleration, 0);
-		//落下速度制限
+		// 落下速度制限
 		velocity_.y = std::max(velocity_.y, -kLimitFallSpeed);
 		// 着地フラグ
 		bool landing = false;
@@ -78,26 +82,23 @@ void Player::Update() {
 		// 地面との当たり判定
 		// 降下中?
 		if (velocity_.y < 0) {
-			//Y座標が地面以下になったら着地
+			// Y座標が地面以下になったら着地
 			if (worldTransform_.translation_.y <= 1.0f) {
 				landing = true;
 			}
 		}
 		if (landing) {
-			//めり込み
+			// めり込み
 			worldTransform_.translation_.y = 1.0f;
-			//摩擦で横方向速度が減衰する
+			// 摩擦で横方向速度が減衰する
 			velocity_.x *= (1.0f - kAttenuation);
-			//下方向速度をリセット
+			// 下方向速度をリセット
 			velocity_.y = 0.0f;
-			//着地状態に移行
+			// 着地状態に移行
 			onGround_ = true;
 		}
 	}
-	if (Input::GetInstance()->PushKey(DIK_UP)) {
-		velocity_ += Vector3(0, kJumpAcceleration, 0);
-	}
-	
+
 	if (turnTimer_ > 0.0f) {
 
 		turnTimer_ = 1.0f / 60.0f;
@@ -107,15 +108,14 @@ void Player::Update() {
 		// 状態に応じた角度に取得
 		float destinationRotationY = destinationRotationYTable[static_cast<uint32_t>(lrDirection_)];
 		// 自キャラの角度を設定する
-		worldTransform_.rotation_.y = EaseInOut(destinationRotationY,turnFirstRotationY_,turnTimer_/kTimeTern);
+		worldTransform_.rotation_.y = EaseInOut(destinationRotationY, turnFirstRotationY_, turnTimer_ / kTimeTern);
 	}
-	//移動
+	// 移動
 	worldTransform_.translation_ += velocity_;
 
 	worldTransform_.matWorld_ = MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
 
 	worldTransform_.TransferMatrix();
-
 }
 
-void Player::Draw() { model_->Draw(worldTransform_, *camera_, textureHandle_); }
+void Player::Draw() { model_->Draw(worldTransform_, *camera_); }

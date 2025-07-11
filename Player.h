@@ -3,9 +3,6 @@
 class Player {
 
 public:
-
-	
-
 	KamataEngine::Vector3 velocity_ = {};
 
 	// 初期化
@@ -17,10 +14,11 @@ public:
 	// 描画
 	void Draw();
 
-	
+	const KamataEngine::WorldTransform& GetWorldTransform() const { return worldTransform_; }
+
+	const KamataEngine::Vector3& GetVelocity() const { return velocity_; }
 
 private:
-
 	enum class LRDirection {
 		kRight,
 		kLeft,
@@ -30,19 +28,19 @@ private:
 	float turnFirstRotationY_ = 0.0f;
 	// 旋回タイマー
 	float turnTimer_ = 0.0f;
-	//接地状態フラグ
+	// 接地状態フラグ
 	bool onGround_ = true;
 
 	static inline const float kAcceleration = 0.1f;
 	static inline const float kAttenuation = 0.8f;
 	static inline const float kLimitRunSpeed = 0.3f;
-	//旋回時間<秒>
-	static inline const float kTimeTern  = 0.3f;
-	//重力加速度(下方向)
+	// 旋回時間<秒>
+	static inline const float kTimeTern = 0.3f;
+	// 重力加速度(下方向)
 	static inline const float kGravityAcceleration = 0.3f;
-	//最大落下速度(下方向)
+	// 最大落下速度(下方向)
 	static inline const float kLimitFallSpeed = 0.3f;
-	//ジャンプ初速(上方向)
+	// ジャンプ初速(上方向)
 	static inline const float kJumpAcceleration = 0.3f;
 
 	// ワールド変換データ
@@ -55,4 +53,6 @@ private:
 	KamataEngine::Camera* camera_ = nullptr;
 
 	LRDirection lrDirection_ = LRDirection::kRight;
+
+	
 };
