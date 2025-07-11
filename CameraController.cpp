@@ -1,5 +1,7 @@
+#include <algorithm>
 #include "CameraController.h"
-#include"Player.h"
+#include "Math.h"
+#include "Player.h"
 using namespace KamataEngine;
 using namespace MathUtility;
 
@@ -35,5 +37,9 @@ void CameraController::Update() {
 }
 
 void CameraController::Reset() {
+	// 追従対象のワールドトランスフォームを参照
+	const WorldTransform& targetWorldTransform = target_->GetWorldTransform();
 
+	// 追従対象とオフセットからカメラの座標を計算
+	camera_.translation_ = targetWorldTransform.translation_ + targetOffset_;
 }

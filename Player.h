@@ -3,6 +3,12 @@
 class Player {
 
 public:
+
+	enum class LRDirection {
+		kRight,
+		kLeft,
+	};
+
 	KamataEngine::Vector3 velocity_ = {};
 
 	// 初期化
@@ -19,10 +25,7 @@ public:
 	const KamataEngine::Vector3& GetVelocity() const { return velocity_; }
 
 private:
-	enum class LRDirection {
-		kRight,
-		kLeft,
-	};
+
 
 	// 旋回開始時の角度
 	float turnFirstRotationY_ = 0.0f;

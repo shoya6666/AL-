@@ -40,7 +40,7 @@ private:
 
 	KamataEngine::Vector3 targetPosition_;
 
-	static inline const float kInterpolationRate = 1.0f;
+	static inline const float kInterpolationRate = 0.1f;
 	static inline const float kVelocityBias = 5.0f;
 	static inline const Rect targetMargin = {-9.0f, 9.0f, -5.0f, 5.0f};
 };
