@@ -1,6 +1,7 @@
 #include "KamataEngine.h"
 #pragma once
 class Player {
+	class MapChipField;
 
 public:
 
@@ -23,6 +24,8 @@ public:
 	const KamataEngine::WorldTransform& GetWorldTransform() const { return worldTransform_; }
 
 	const KamataEngine::Vector3& GetVelocity() const { return velocity_; }
+
+	void SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
 
 private:
 
@@ -54,6 +57,8 @@ private:
 	uint32_t textureHandle_ = 0u;
 
 	KamataEngine::Camera* camera_ = nullptr;
+
+	MapChipField* mapChipField_ = nullptr;
 
 	LRDirection lrDirection_ = LRDirection::kRight;
 
