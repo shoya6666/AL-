@@ -11,6 +11,22 @@ public:
 		kLeft,
 	};
 
+	enum Corner {
+		kRightBottom,
+		kLeftBottom,
+		kRightTop,
+		kLeftTop,
+
+		kNumCorner
+	};
+
+	struct CoolisionMapInfo {
+		bool ceiling = false;
+		bool landing = false;
+		bool hitWall = false;
+		KamataEngine::Vector3 move;
+	};
+
 	KamataEngine::Vector3 velocity_ = {};
 
 	// 初期化
@@ -27,6 +43,18 @@ public:
 	const KamataEngine::Vector3& GetVelocity() const { return velocity_; }
 
 	void SetMapChipField(MapChipField* mapChipField) { mapChipField_ = mapChipField; }
+
+	void InputMove();
+
+	void AnimateTurn();
+
+	void CheckMapCollision(CoolisionMapInfo& info);
+
+	void CheckMapCollisionUp(CoolisionMapInfo& info);
+
+	void CheckMapMove(const CoolisionMapInfo& info);
+
+	KamataEngine::Vector3 CornerPosition(const KamataEngine::Vector3& center, Corner corner);
 
 private:
 
@@ -49,6 +77,11 @@ private:
 	static inline const float kLimitFallSpeed = 0.3f;
 	// ジャンプ初速(上方向)
 	static inline const float kJumpAcceleration = 0.5f;
+	//キャラクターの当たり判定サイズ
+	static inline const float kWidth = 0.8f;
+	static inline const float kHeight = 0.8f;
+	//隙間
+	static inline const float kBlank = 0.1f;
 
 	// ワールド変換データ
 	KamataEngine::WorldTransform worldTransform_;
@@ -63,5 +96,5 @@ private:
 
 	LRDirection lrDirection_ = LRDirection::kRight;
 
-	
-};
+
+}

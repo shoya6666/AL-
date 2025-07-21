@@ -1,6 +1,7 @@
 #define NOMINMAX
 #include "Player.h"
 #include "MyMath.h"
+#include"MapChipField.h"
 #include "cassert"
 #include <algorithm>
 #include <numbers>
@@ -19,6 +20,48 @@ void Player::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera
 }
 
 void Player::Update() {
+
+	InputMove();
+	AnimateTurn();
+
+	// 衝突情報を初期化
+	CoolisionMapInfo collisionMapInfo;
+	// 移動量に速度の値をコピー
+	collisionMapInfo.move = velocity_;
+	
+	// マップ衝突チェック
+	CheckMapCollision(collisionMapInfo);
+
+	CheckMapMove(collisionMapInfo);
+	// 着地フラグ
+	bool landing = false;
+
+	// 地面との当たり判定
+	// 降下中?
+	if (velocity_.y < 0) {
+		// Y座標が地面以下になったら着地
+		if (worldTransform_.translation_.y <= 1.0f) {
+			landing = true;
+		}
+	}
+	if (landing) {
+		// めり込み
+		worldTransform_.translation_.y = 1.0f;
+		// 摩擦で横方向速度が減衰する
+		velocity_.x *= (1.0f - kAttenuation);
+		// 下方向速度をリセット
+		velocity_.y = 0.0f;
+		// 着地状態に移行
+		onGround_ = true;
+	}
+
+
+
+	worldTransform_.matWorld_ = MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
+
+	worldTransform_.TransferMatrix();
+}
+void Player::InputMove() {
 
 	if (onGround_) {
 		// ジャンプ開始
@@ -76,28 +119,10 @@ void Player::Update() {
 		velocity_ += Vector3(0, -kGravityAcceleration, 0);
 		// 落下速度制限
 		velocity_.y = std::max(velocity_.y, -kLimitFallSpeed);
-		// 着地フラグ
-		bool landing = false;
-
-		// 地面との当たり判定
-		// 降下中?
-		if (velocity_.y < 0) {
-			// Y座標が地面以下になったら着地
-			if (worldTransform_.translation_.y <= 1.0f) {
-				landing = true;
-			}
-		}
-		if (landing) {
-			// めり込み
-			worldTransform_.translation_.y = 1.0f;
-			// 摩擦で横方向速度が減衰する
-			velocity_.x *= (1.0f - kAttenuation);
-			// 下方向速度をリセット
-			velocity_.y = 0.0f;
-			// 着地状態に移行
-			onGround_ = true;
-		}
 	}
+}
+
+void Player::AnimateTurn() {
 
 	if (turnTimer_ > 0.0f) {
 
@@ -110,12 +135,74 @@ void Player::Update() {
 		// 自キャラの角度を設定する
 		worldTransform_.rotation_.y = EaseInOut(destinationRotationY, turnFirstRotationY_, turnTimer_ / kTimeTern);
 	}
-	// 移動
-	worldTransform_.translation_ += velocity_;
+}
 
-	worldTransform_.matWorld_ = MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
+void Player::CheckMapCollision(CoolisionMapInfo& info) { 
+	CheckMapCollisionUp(info);
+	//CheckMapCollisionDown(info);
+	// CheckMapCollisionRight(info);
+	// CheckMapCollisionLeft(info);
+}
 
-	worldTransform_.TransferMatrix();
+void Player::CheckMapCollisionUp(CoolisionMapInfo& info) {
+	
+	//上昇あり？
+	if (info.move.y <= 0) {
+		return;
+	}
+
+	//移動後の4つの角の座標
+	std::array<Vector3, kNumCorner> positionsNew;
+
+	for (uint32_t i = 0; i < positionsNew.size(); ++i) {
+		positionsNew[i] = CornerPosition(worldTransform_.translation_ + info.move, static_cast<Corner>(i));
+	}
+
+	MapChipType mapChipType;
+	//真上のあたり判定を行う
+	bool hit = false;
+	//左上点の判定
+	MapChipField::IndexSet indexSet;
+	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionsNew[kLeftTop]);
+	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
+	if (mapChipType == MapChipType::kBlock) {
+		hit = true;
+	}
+	// 右上点の判定
+	indexSet = mapChipField_->GetMapChipIndexSetByPosition(positionsNew[kRightTop]);
+	mapChipType = mapChipField_->GetMapChipTypeByIndex(indexSet.xIndex, indexSet.yIndex);
+	if (mapChipType == MapChipType::kBlock) {
+		hit = true;
+	}
+
+	if (hit) {
+		//
+		indexSet = mapChipField_->GetMapChipIndexSetByPosition(worldTransform_.translation_ + info.move + Vector3(0, +kHeight / 2.0f, 0));
+		//めり込み先ブロックの範囲短形
+		MapChipField::Rect rect = mapChipField_->GetRectVByIndex(indexSet.xIndex, indexSet.yIndex);
+		info.move.y = std::max(0.0f, rect.bottom - worldTransform_.translation_.y - (kHeight / 2.0f + kBlank));
+		//天井にあった田ことを記録する
+		info.ceiling = true;
+	}
+
+}
+
+void Player::CheckMapMove(const CoolisionMapInfo& info) {
+
+	worldTransform_.translation_ += info.move;
+
+}
+
+KamataEngine::Vector3 Player::CornerPosition(const KamataEngine::Vector3& center, Corner corner) {
+	Vector3 offsetTable[kNumCorner] = {
+	    {+kWidth / 2.0f, -kHeight / 2.0f, 0},//RightBottom
+	    {-kWidth / 2.0f, -kHeight / 2.0f, 0},//LeftBottom
+	    {+kWidth / 2.0f, +kHeight / 2.0f, 0},//RightTop
+	    {-kWidth / 2.0f, +kHeight / 2.0f, 0},//LeftTop
+	};
+
+	return center + offsetTable[static_cast<uint32_t>(corner)];
+
 }
 
 void Player::Draw() { model_->Draw(worldTransform_, *camera_); }
