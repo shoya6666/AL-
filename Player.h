@@ -1,7 +1,8 @@
 #include "KamataEngine.h"
 #pragma once
+class MapChipField;
 class Player {
-	class MapChipField;
+	
 
 public:
 
