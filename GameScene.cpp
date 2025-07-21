@@ -59,7 +59,7 @@ void GameScene::Initialize() {
 
 	player_->SetMapChipField(mapChipField_);
 
-}
+}//oj
 
 void GameScene::Update() {
 	// スプライトの今の座標を取得
