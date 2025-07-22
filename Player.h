@@ -2,10 +2,8 @@
 #pragma once
 class MapChipField;
 class Player {
-	
 
 public:
-
 	enum class LRDirection {
 		kRight,
 		kLeft,
@@ -57,8 +55,6 @@ public:
 	KamataEngine::Vector3 CornerPosition(const KamataEngine::Vector3& center, Corner corner);
 
 private:
-
-
 	// 旋回開始時の角度
 	float turnFirstRotationY_ = 0.0f;
 	// 旋回タイマー
@@ -77,10 +73,10 @@ private:
 	static inline const float kLimitFallSpeed = 0.3f;
 	// ジャンプ初速(上方向)
 	static inline const float kJumpAcceleration = 0.5f;
-	//キャラクターの当たり判定サイズ
+	// キャラクターの当たり判定サイズ
 	static inline const float kWidth = 0.8f;
 	static inline const float kHeight = 0.8f;
-	//隙間
+	// 隙間
 	static inline const float kBlank = 0.1f;
 
 	// ワールド変換データ
@@ -95,6 +91,4 @@ private:
 	MapChipField* mapChipField_ = nullptr;
 
 	LRDirection lrDirection_ = LRDirection::kRight;
-
-
-}
+};
