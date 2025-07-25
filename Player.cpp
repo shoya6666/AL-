@@ -20,8 +20,9 @@ void Player::Initialize(KamataEngine::Model* model, KamataEngine::Camera* camera
 	worldTransform_.rotation_.y = std::numbers::pi_v<float> / 2.0f;
 }
 
-void Player::Update() { // アフィン変換
-	                    // アフィン変換行列の作成
+void Player::Update() {
+	// アフィン変換
+	// アフィン変換行列の作成
 	worldTransform_.matWorld_ = MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
 
 	// 行列を定数バッファに転送
@@ -52,11 +53,11 @@ void Player::Update() { // アフィン変換
 	// 7旋回制御
 	AnimateTurn();
 
-	// 行列更新
-	//   アフィン変換行列の作成
-	worldTransform_.matWorld_ = MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
-	// 定数バッファに転送する
-	worldTransform_.TransferMatrix();
+	//// 行列更新
+	////   アフィン変換行列の作成
+	//worldTransform_.matWorld_ = MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
+	//// 定数バッファに転送する
+	//worldTransform_.TransferMatrix();
 }
 
 void Player::Draw() { model_->Draw(worldTransform_, *camera_); }

@@ -4,7 +4,7 @@
 using namespace KamataEngine;
 
 void GameScene::Initialize() {
-	
+
 	sprite_ = Sprite::Create(textureHandle_, {100, 50});
 	// model_ = Model::Create();
 	model_ = Model::CreateFromOBJ("player");
@@ -14,16 +14,18 @@ void GameScene::Initialize() {
 	camera_.Initialize();
 	// 自キャラの生成
 	player_ = new Player();
+	// 敵の生成
+	enemy_ = new Enemy();
 	// 3Dモデルデータの生成
 	modelBlock_ = Model::CreateFromOBJ("block");
 	//
 	cameraController_ = new CameraController();
-	
+
 	// サウンドデータハンドル
-	//soundDataHandle_ = Audio::GetInstance()->LoadWave("fanfare.wav");
+	// soundDataHandle_ = Audio::GetInstance()->LoadWave("fanfare.wav");
 	// 音声再生
 	// Audio::GetInstance()->PlayWave(soundDataHandle_);
-	//voiceHandle_ = Audio::GetInstance()->PlayWave(soundDataHandle_, true);
+	// voiceHandle_ = Audio::GetInstance()->PlayWave(soundDataHandle_, true);
 	// ライン描画が参照するかめらを指定する
 	PrimitiveDrawer::GetInstance()->SetCamera(&camera_);
 	// デバッグカメラ生成
@@ -32,7 +34,7 @@ void GameScene::Initialize() {
 	AxisIndicator::GetInstance()->SetVisible(true);
 	// 軸方向表示が参照するビュープロジェクションを指定する（アドレス渡し）
 	AxisIndicator::GetInstance()->SetTargetCamera(&debugCamera_->GetCamera());
-	
+
 	// デバッグカメラの生成
 	debugCamera_ = new DebugCamera(1280, 720);
 	input_ = Input::GetInstance();
@@ -40,15 +42,18 @@ void GameScene::Initialize() {
 	skydome_ = new Skydome();
 	skydome_->Initialize(modelSkydome_, &camera_);
 
-	//マップ
+	// マップ
 	mapChipField_ = new MapChipField;
 	mapChipField_->LoadMapChipCsv("Resources/blocks.csv");
 
 	GenerateBlocks();
-	KamataEngine::Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
 	// 自キャラの初期化
+	KamataEngine::Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
 	player_->Initialize(model_, &camera_, playerPosition);
-	//カメラコントローラの生成
+	// 敵の初期化
+	KamataEngine::Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
+	enemy_->Initialize(model_, &camera_, enemyPosition);
+	// カメラコントローラの生成
 	cameraController_ = new CameraController();
 	cameraController_->Initialize();
 	cameraController_->setTarget(player_);
@@ -58,7 +63,6 @@ void GameScene::Initialize() {
 	cameraController_->SetMovableArea(cameraArea);
 
 	player_->SetMapChipField(mapChipField_);
-
 }
 
 void GameScene::Update() {
@@ -77,11 +81,11 @@ void GameScene::Update() {
 	// デバッグテキストの表示
 #ifdef _DEBUG
 	//// float3入力ボックス
-	//ImGui::InputFloat3("inputFloat3", inputFloat3);
+	// ImGui::InputFloat3("inputFloat3", inputFloat3);
 	//// float3スライダー
-	//ImGui::SliderFloat3("SliderFloat3", inputFloat3, 0.0f, 1.0f);
+	// ImGui::SliderFloat3("SliderFloat3", inputFloat3, 0.0f, 1.0f);
 	//// デモウィンドウの表示の有効化
-	//ImGui::ShowDemoWindow();
+	// ImGui::ShowDemoWindow();
 #endif
 	debugCamera_->Update();
 	player_->Update();
@@ -114,9 +118,8 @@ void GameScene::Update() {
 	} else {
 		camera_.matView = cameraController_->GetViewProjection().matView;
 		camera_.matProjection = cameraController_->GetViewProjection().matProjection;
-		//ビュープロダクション行列の転送
+		// ビュープロダクション行列の転送
 		camera_.TransferMatrix();
-
 	}
 	skydome_->Update();
 	cameraController_->Update();
@@ -127,15 +130,15 @@ void GameScene::Draw() {
 	/*DirectXCommon* dxCommon = DirectXCommon::GetInstance();*/
 
 	// スプライト描画前処理
-	//Sprite::PreDraw(dxCommon->GetCommandList());
+	// Sprite::PreDraw(dxCommon->GetCommandList());
 
 	// sprite_->Draw();
 
 	// スプライト描画後処理
-	//Sprite::PostDraw();
+	// Sprite::PostDraw();
 
 	//// 3Dモデル描画前処理
-	//Model::PreDraw(dxCommon->GetCommandList());
+	// Model::PreDraw(dxCommon->GetCommandList());
 
 	// 3Dモデル描画前処理
 	Model::PreDraw();
@@ -163,6 +166,7 @@ GameScene::~GameScene() {
 	delete model_;
 	delete debugCamera_;
 	delete player_;
+	delete enemy_;
 	delete modelBlock_;
 	delete skydome_;
 	delete modelSkydome_;
@@ -180,11 +184,11 @@ void GameScene::GenerateBlocks() {
 	// 要素数
 	uint32_t numBlocksVirtical = mapChipField_->GetNumBlockVirtical();
 	uint32_t numBlocksHorizontal = mapChipField_->GetNumBlockHorizontal();
-	
+
 	// ブロック数1個分の横幅
-	//const float kBlockWidth = 2.0f;
-	//const float kBlockHeight = 2.0f;
-	
+	// const float kBlockWidth = 2.0f;
+	// const float kBlockHeight = 2.0f;
+
 	// 要素数を変更する
 	// 列数を設定（縦方向のブロック数）
 	worldTransformBlocks_.resize(numBlocksVirtical);
@@ -200,10 +204,8 @@ void GameScene::GenerateBlocks() {
 				WorldTransform* worldTransform = new WorldTransform();
 				worldTransform->Initialize();
 				worldTransformBlocks_[i][j] = worldTransform;
-				worldTransformBlocks_[i][j]->translation_ = mapChipField_->GetMapChipPositionByIndex(j,i);
+				worldTransformBlocks_[i][j]->translation_ = mapChipField_->GetMapChipPositionByIndex(j, i);
 			}
 		}
 	}
-
 }
-
