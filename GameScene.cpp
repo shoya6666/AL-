@@ -196,7 +196,7 @@ void GameScene::GenerateBlocks() {
 	// ブロックの生成
 	for (uint32_t i = 0; i < numBlocksVirtical; ++i) {
 		for (uint32_t j = 0; j < numBlocksHorizontal; ++j) {
-			if (mapChipField_->GetMapChipTypeByIndex(j, i) == MapChipType::kBlock) {
+			if (mapChipField_->GetmapChiptypeByIndex(j, i) == MapChipType::kBlock) {
 				WorldTransform* worldTransform = new WorldTransform();
 				worldTransform->Initialize();
 				worldTransformBlocks_[i][j] = worldTransform;
