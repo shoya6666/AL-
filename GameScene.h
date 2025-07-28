@@ -22,6 +22,8 @@ public:
 
 	void GenerateBlocks();
 
+	void ChecAllCollisions();
+
 private:
 	// テクスチャハンドル
 	uint32_t textureHandle_ = 0;
@@ -29,6 +31,8 @@ private:
 	KamataEngine::Sprite* sprite_ = nullptr;
 	// 3Dモデル
 	KamataEngine::Model* model_ = nullptr;
+	// 3Dモデルenemy
+	KamataEngine::Model* Enemymodel_ = nullptr;
 	// ワールドトランスフォーム
 	KamataEngine::WorldTransform worldTransform_;
 	// カメラ
@@ -44,9 +48,8 @@ private:
 	// 自キャラ
 	Player* player_ = nullptr;
 	std::vector<std::vector<KamataEngine::WorldTransform*>> worldTransformBlocks_;
-	// 敵キャラ
-	Enemy* enemy_ = nullptr;
-	std::vector<std::vector<KamataEngine::WorldTransform*>> worldTransformBlocks_;
+	
+	std::list<Enemy*> enemies_;
 	// 3Dモデルデータ
 	KamataEngine::Model* modelBlock_ = nullptr;
 	// デバッグカメラ友好

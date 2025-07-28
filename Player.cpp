@@ -53,11 +53,6 @@ void Player::Update() {
 	// 7旋回制御
 	AnimateTurn();
 
-	//// 行列更新
-	////   アフィン変換行列の作成
-	//worldTransform_.matWorld_ = MakeAffineMatrix(worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
-	//// 定数バッファに転送する
-	//worldTransform_.TransferMatrix();
 }
 
 void Player::Draw() { model_->Draw(worldTransform_, *camera_); }
@@ -424,6 +419,30 @@ KamataEngine::Vector3 Player::CornerPosition(const KamataEngine::Vector3& center
     };
 
 	return center + offsetTable[static_cast<uint32_t>(corner)];
+}
+
+Vector3 Player::GetWorldPosition() { 
+	
+	Vector3 worldPos;
+
+	worldPos.x = worldTransform_.matWorld_.m[3][0];
+	worldPos.y = worldTransform_.matWorld_.m[3][1];
+	worldPos.z = worldTransform_.matWorld_.m[3][2];
+
+	return worldPos;
+}
+
+AABB Player::GetAABB() { 
+
+	Vector3 worldPos = GetWorldPosition();
+
+	AABB aabb;
+
+	aabb.min = {worldPos.x - kWidth / 2.0f, worldPos.y - kHeight / 2.0f, worldPos.z - kWidth / 2.0f};
+	aabb.max = {worldPos.x + kWidth / 2.0f, worldPos.y + kHeight / 2.0f, worldPos.z + kWidth / 2.0f};
+
+
+	return aabb; 
 }
 
 // 7旋回制御

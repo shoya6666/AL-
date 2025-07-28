@@ -116,6 +116,10 @@ public:
 	// 壁の速度減速率
 	static inline const float kAttenuationWall = 0.5f;
 
+	Vector3 GetWorldPosition();
+
+	AABB GetAABB();
+
 private:
 	// ワールド変換データ
 	KamataEngine::WorldTransform worldTransform_;

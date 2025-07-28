@@ -8,14 +8,14 @@ void GameScene::Initialize() {
 	sprite_ = Sprite::Create(textureHandle_, {100, 50});
 	// model_ = Model::Create();
 	model_ = Model::CreateFromOBJ("player");
+	Enemymodel_ = Model::CreateFromOBJ("enemy");
 	// ワールドトランスフォーム
 	worldTransform_.Initialize();
 	// カメラの初期化
 	camera_.Initialize();
 	// 自キャラの生成
 	player_ = new Player();
-	// 敵の生成
-	enemy_ = new Enemy();
+	
 	// 3Dモデルデータの生成
 	modelBlock_ = Model::CreateFromOBJ("block");
 	//
@@ -50,9 +50,7 @@ void GameScene::Initialize() {
 	// 自キャラの初期化
 	KamataEngine::Vector3 playerPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
 	player_->Initialize(model_, &camera_, playerPosition);
-	// 敵の初期化
-	KamataEngine::Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(1, 18);
-	enemy_->Initialize(model_, &camera_, enemyPosition);
+	
 	// カメラコントローラの生成
 	cameraController_ = new CameraController();
 	cameraController_->Initialize();
@@ -63,6 +61,15 @@ void GameScene::Initialize() {
 	cameraController_->SetMovableArea(cameraArea);
 
 	player_->SetMapChipField(mapChipField_);
+	// 敵の初期化
+	for (uint32_t i = 0; i < 2; i++) {
+	
+		Enemy* newEnemy = new Enemy();
+		Vector3 enemyPosition = mapChipField_->GetMapChipPositionByIndex(6 + i, 18);
+		newEnemy->Initialize(Enemymodel_, &camera_, enemyPosition);
+
+		enemies_.push_back(newEnemy);
+	}
 }
 
 void GameScene::Update() {
@@ -123,6 +130,9 @@ void GameScene::Update() {
 	}
 	skydome_->Update();
 	cameraController_->Update();
+	for (Enemy* enemy : enemies_) {
+		enemy->Update();
+	}
 }
 
 void GameScene::Draw() {
@@ -153,12 +163,15 @@ void GameScene::Draw() {
 			modelBlock_->Draw(*worldTransformBlock, camera_);
 		}
 	}
+	for (Enemy* enemy : enemies_) {
+		enemy->Draw();
+	}
 	skydome_->Draw();
 	// 3Dモデル描画後処理
 	Model::PostDraw();
 
-	// ラインを描画する
-	// PrimitiveDrawer::GetInstance()->DrawLine3d({0, 0, 0}, {0, 10, 0}, {1.0f, 0.0f, 0.0f, 1.0f});
+	ChecAllCollisions();
+
 }
 
 GameScene::~GameScene() {
@@ -166,7 +179,6 @@ GameScene::~GameScene() {
 	delete model_;
 	delete debugCamera_;
 	delete player_;
-	delete enemy_;
 	delete modelBlock_;
 	delete skydome_;
 	delete modelSkydome_;
@@ -177,6 +189,9 @@ GameScene::~GameScene() {
 		}
 	}
 	worldTransformBlocks_.clear();
+	for (Enemy* enemy : enemies_) {
+		delete enemy;
+	}
 }
 
 void GameScene::GenerateBlocks() {
@@ -208,4 +223,28 @@ void GameScene::GenerateBlocks() {
 			}
 		}
 	}
+}
+
+void GameScene::ChecAllCollisions() {
+
+	{
+		//
+		AABB aabb1, aabb2;
+
+		//
+		aabb1 = player_->GetAABB();
+
+		//
+		for (Enemy* enemy : enemies_) {
+			//
+			aabb2 = enemy->GetAABB();
+
+			//
+			if (IsCollision(aabb1, aabb2)) {
+				//
+				//p20
+			}
+		}
+	}
+
 }
